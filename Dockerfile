@@ -1,22 +1,28 @@
 #
 # TinyMediaManager Dockerfile
 #
-FROM jlesage/baseimage-gui:alpine-3.12-glibc
+FROM jlesage/baseimage-gui:alpine-3.17-v4
 
 # Define software versions.
-ARG TMM_VERSION=4.3.4
+ARG TMM_VERSION=4.3.8.1
 
 # Define software download URLs.
-ARG TMM_URL=https://release.tinymediamanager.org/v4/dist/tmm_${TMM_VERSION}_linux-amd64.tar.gz
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/jre/bin
+ARG TMM_URL=https://release.tinymediamanager.org/v4/dist/tmm_${TMM_VERSION}_linux-arm.tar.gz
+ARG JAVAJRE_URL=https://cdn.azul.com/zulu/bin/zulu17.38.21-ca-jre17.0.5-linux_musl_aarch64.tar.gz
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/config/jre/bin:/opt/base/bin/
 
 # Define working directory.
 WORKDIR /tmp
 
-# Download TinyMediaManager
+# Download TinyMediaManager&&JRE
 RUN \
     mkdir -p /defaults && \
-    wget ${TMM_URL} -O /defaults/tmm.tar.gz
+    wget ${TMM_URL} -O /defaults/tmm.tar.gz && \
+    wget ${JAVAJRE_URL} -O /defaults/jre.tar.gz
+
+ADD launcher-extra.yml /defaults/
+
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # Install dependencies.
 RUN \
@@ -26,16 +32,21 @@ RUN \
         bash \
 	    zenity \
         tar \
-      	zstd
+      	zstd \
+        ffmpeg
 
-
+# Install Chinese Fonts https://github.com/dzhuang/tinymediamanager-docker
+RUN wget https://mirrors.aliyun.com/alpine/edge/testing/x86_64/font-wqy-zenhei-0.9.45-r2.apk -O wqy.apk \
+    && apk add --allow-untrusted wqy.apk \
+    && rm -rf /tmp/wqy.apk
+    
 # Fix Java Segmentation Fault
-RUN wget "https://www.archlinux.org/packages/core/x86_64/zlib/download" -O /tmp/libz.tar.xz \
-    && mkdir -p /tmp/libz \
-    && tar -xf /tmp/libz.tar.xz -C /tmp/libz \
-    && cp /tmp/libz/usr/lib/libz.so.1.2.12 /usr/glibc-compat/lib \
-    && /usr/glibc-compat/sbin/ldconfig \
-    && rm -rf /tmp/libz /tmp/libz.tar.xz
+# RUN wget "https://www.archlinux.org/packages/core/x86_64/zlib/download" -O /tmp/libz.tar.xz \
+#     && mkdir -p /tmp/libz \
+#     && tar -xf /tmp/libz.tar.xz -C /tmp/libz \
+#     && cp /tmp/libz/usr/lib/libz.so.1.2.12 /usr/glibc-compat/lib \
+#     && /usr/glibc-compat/sbin/ldconfig \
+#     && rm -rf /tmp/libz /tmp/libz.tar.xz
 
 # Maximize only the main/initial window.
 # It seems this is not needed for TMM 3.X version.
@@ -62,8 +73,17 @@ VOLUME ["/media"]
 
 # Metadata.
 LABEL \
-      org.label-schema.name="tinymediamanager" \
-      org.label-schema.description="Docker container for TinyMediaManager" \
-      org.label-schema.version="unknown" \
-      org.label-schema.vcs-url="https://github.com/romancin/tmm-docker" \
-      org.label-schema.schema-version="1.0"
+      org.label-schema.name="tinymediamanager-arm" \
+      org.label-schema.description="arm64 version of the TinyMediaManager container" \
+      org.label-schema.version=${TMM_VERSION} \
+      org.label-schema.vcs-url="https://github.com/coolyzp/tinymediamanager-arm" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.docker.cmd="docker run -d \
+--restart=unless-stopped \
+--name=tinymediamanager-arm \
+-v /mnt/sdb2/tinymediamanager/config:/config \
+-v /mnt:/mnt:rslave \
+-e GROUP_ID=0 -e USER_ID=0 -e TZ=Asia/Hong_Kong \
+-p 5800:5800 \
+-p 5900:5900 \
+coolyzp/tinymediamanager-arm"

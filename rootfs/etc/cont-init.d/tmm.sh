@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv sh
+#!/bin/sh
 
 set -e # Exit immediately if a command exits with a non-zero status.
 set -u # Treat unset variables as an error.
@@ -11,13 +11,15 @@ log() {
 mkdir -p /config/logs
 
 if [ ! -f /config/tmm.jar ]; then
-    cp -r /defaults/* /config/
-    cd /config
-    tar --strip-components=1 -zxvf /config/tmm.tar.gz
+    tar --strip-components=1 -zxvf /defaults/tmm.tar.gz -C /config/
+    rm /config/jre/jre-linux_arm32.tar.br
+    tar --strip-components=1 -zxvf /defaults/jre.tar.gz -C /config/jre/
+    cp /defaults/launcher-extra.yml /config/
 fi
 
 # Take ownership of the config directory content.
 chown -R $USER_ID:$GROUP_ID /config/*
+chmod -R 777 /config/
 
 # Take ownership of the output directory.
 #if ! chown $USER_ID:$GROUP_ID /output; then

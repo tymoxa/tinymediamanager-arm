@@ -1,4 +1,10 @@
-# tinymediamanager-docker
+# tinymediamanager-arm
+
+arm64 version of the TinyMediaManager container
+https://hub.docker.com/r/coolyzp/tinymediamanager-arm
+![docker pulls](https://img.shields.io/docker/pulls/coolyzp/tinymediamanager-arm.svg) ![docker stars](https://img.shields.io/docker/stars/coolyzp/tinymediamanager-arm.svg)
+
+***
 
 A repository for creating a docker container including TinyMediaManager with GUI interface.
 
@@ -34,13 +40,13 @@ Instructions:
 Sample run command:
 
 ```bash
-docker run -d --name=tinymediamanager \
+docker run -d --name=tinymediamanager-arm \
 -v /share/Container/tinymediamanager/config:/config \
 -v /share/Container/tinymediamanager/media:/media \
 -e GROUP_ID=0 -e USER_ID=0 -e TZ=Europe/Madrid \
 -p 5800:5800 \
 -p 5900:5900 \
-romancin/tinymediamanager:v4-latest
+coolyzp/tinymediamanager-arm:latest
 ```
 
 Browse to `http://your-host-ip:5800` to access the TinyMediaManager GUI.
