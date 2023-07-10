@@ -1,5 +1,7 @@
 # tinymediamanager-arm
 
+Officially supported:https://hub.docker.com/r/tinymediamanager/tinymediamanager/tags
+
 arm64 version of the TinyMediaManager container
 https://hub.docker.com/r/coolyzp/tinymediamanager-arm
 ![docker pulls](https://img.shields.io/docker/pulls/coolyzp/tinymediamanager-arm.svg) ![docker stars](https://img.shields.io/docker/stars/coolyzp/tinymediamanager-arm.svg)
