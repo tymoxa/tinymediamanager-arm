@@ -4,7 +4,7 @@
 FROM jlesage/baseimage-gui:alpine-3.17-v4
 
 # Define software versions.
-ARG TMM_VERSION=4.3.8.1
+ARG TMM_VERSION=4.3.13
 
 # Define software download URLs.
 ARG TMM_URL=https://release.tinymediamanager.org/v4/dist/tmm_${TMM_VERSION}_linux-arm.tar.gz
@@ -22,7 +22,7 @@ RUN \
 
 ADD launcher-extra.yml /defaults/
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # Install dependencies.
 RUN \
@@ -36,9 +36,9 @@ RUN \
         ffmpeg
 
 # Install Chinese Fonts https://github.com/dzhuang/tinymediamanager-docker
-RUN wget https://mirrors.aliyun.com/alpine/edge/testing/x86_64/font-wqy-zenhei-0.9.45-r2.apk -O wqy.apk \
-    && apk add --allow-untrusted wqy.apk \
-    && rm -rf /tmp/wqy.apk
+#RUN wget https://mirrors.aliyun.com/alpine/edge/testing/x86_64/font-wqy-zenhei-0.9.45-r2.apk -O wqy.apk \
+#    && apk add --allow-untrusted wqy.apk \
+#    && rm -rf /tmp/wqy.apk
     
 # Fix Java Segmentation Fault
 # RUN wget "https://www.archlinux.org/packages/core/x86_64/zlib/download" -O /tmp/libz.tar.xz \
@@ -83,7 +83,7 @@ LABEL \
 --name=tinymediamanager-arm \
 -v /mnt/sdb2/tinymediamanager/config:/config \
 -v /mnt:/mnt:rslave \
--e GROUP_ID=0 -e USER_ID=0 -e TZ=Asia/Hong_Kong \
--p 5800:5800 \
--p 5900:5900 \
+-e GROUP_ID=1000 -e USER_ID=1000 -e TZ=Europe/Kiev \
+-p 5801:5800 \
+-p 5901:5900 \
 coolyzp/tinymediamanager-arm"
